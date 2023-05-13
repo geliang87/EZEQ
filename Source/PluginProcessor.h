@@ -9,12 +9,13 @@
 #pragma once
 
 #include <JuceHeader.h>
-
+#include "PresetManager.h"
 
 //==============================================================================
 /**
 */
-class SimpleEQAudioProcessor  : public juce::AudioProcessor
+class SimpleEQAudioProcessor  : public juce::AudioProcessor,
+public AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -53,11 +54,30 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    void parameterChanged (const String &parameterID, float newValue) override;
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
     
+    Service::PresetManager& getPresetManager() { return *presetManager; }
+    
+    using Filter = juce::dsp::IIR::Filter<float>;
+    dsp::ProcessorChain<Filter, Filter, Filter, Filter, Filter, Filter> leftChain, rightChain;
+    
+    enum ChainPosition
+    {
+        lowCut,
+        filter2,
+        filter3,
+        filter4,
+        filter5,
+        highCut
+    };
+    
 private:
+    
+    std::unique_ptr<Service::PresetManager> presetManager;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)

@@ -8,7 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include"PresetManager.h"
+#include "PresetManager.h"
 
 //==============================================================================
 SimpleEQAudioProcessor::SimpleEQAudioProcessor()
@@ -23,6 +23,36 @@ SimpleEQAudioProcessor::SimpleEQAudioProcessor()
                        )
 #endif
 {
+    apvts.state.setProperty(Service::PresetManager::presetNameProperty,"", nullptr);
+    apvts.state.setProperty("version", ProjectInfo::versionString, nullptr);
+    presetManager = std::make_unique<Service::PresetManager>(apvts);
+    
+    apvts.addParameterListener ("Scale", this);
+    apvts.addParameterListener ("Gain", this);
+    
+    for (int i = 1; i <= 6; ++i)
+    {
+        String bypassString ("Bypass");
+        bypassString << i;
+        
+        String typeString ("Type");
+        typeString << i;
+        
+        String freqString ("Freq");
+        freqString << i;
+        
+        String gainString ("Gain");
+        gainString << i;
+        
+        String QString ("Q");
+        QString << i;
+        
+        apvts.addParameterListener (bypassString, this);
+        apvts.addParameterListener (typeString, this);
+        apvts.addParameterListener (freqString, this);
+        apvts.addParameterListener (gainString, this);
+        apvts.addParameterListener (QString, this);
+    }
 }
 
 SimpleEQAudioProcessor::~SimpleEQAudioProcessor()
@@ -104,12 +134,18 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     spec.numChannels = 1;
     
     spec.sampleRate = sampleRate;
+    
+    leftChain.prepare (spec);
+    rightChain.prepare (spec);
+    
+    // 配置滤波器默认值
+
 }
 
 void SimpleEQAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    leftChain.reset();
+    rightChain.reset();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -152,7 +188,16 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
+    
+    juce::dsp::AudioBlock<float> block(buffer);
+    auto leftBlock = block.getSingleChannelBlock(0);
+    auto rightBlock = block.getSingleChannelBlock(1);
+    
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+    
+    leftChain.process(leftContext);
+    rightChain.process(rightContext);
 }
 
 //==============================================================================
@@ -176,6 +221,12 @@ void SimpleEQAudioProcessor::setStateInformation (const void* data, int sizeInBy
 {
 }
 
+void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float newValue)
+{
+    DBG (parameterID);
+    DBG (std::to_string (newValue));
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -194,6 +245,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
     // 添加每个滤波器的参数
     for (int i = 1; i <= 6; ++i)
     {
+        String bypassString ("Bypass");
+        bypassString << i;
+        
+        layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID {bypassString, 1},
+                                                                bypassString,
+                                                                true));
+        
+        String typeString ("Type");
+        typeString << i;
+        
+        layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {typeString, 1},
+                                                                typeString,
+                                                                StringArray ("Low Cut", "High Cut", "Bell", "Notch", "band Pass"),
+                                                                1));
+        
         String freqString ("Freq");
         freqString << i;
         

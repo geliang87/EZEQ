@@ -11,11 +11,14 @@
 
 //==============================================================================
 SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p), presetPannel (p.getPresetManager())
 {
     setSize (800,500);
+    startTimer (100);
 
     background = ImageCache::getFromMemory(BinaryData::TDMovieOut_0_png, BinaryData::TDMovieOut_0_pngSize);
+    
+    addAndMakeVisible(presetPannel);
 
     freqSlider.setSliderStyle(Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     freqSlider.setRange(10.0, 220000.0, 1.0);
@@ -63,51 +66,20 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
     analysisButton.setColour(TextButton::ColourIds::buttonOnColourId, juce::Colours::orange);
     analysisButton.setLookAndFeel(&eqLNF);
 
-
-    //for (int i = 1; i <= 6; ++i)
-    //{
-    //    String freqString("freq");
-    //    freqString << i<<;
-
-    //    freqString;
-    //    
-    //}
-    
-    freq1Button.setClickingTogglesState(true);
-    freq1Button.setButtonText("1");
-    freq1Button.setColour(TextButton::ColourIds::buttonColourId, juce::Colours::darkorange);
-    freq1Button.setColour(TextButton::ColourIds::buttonOnColourId, juce::Colours::orange);
-    freq1Button.setLookAndFeel(&eqLNF);
-
-    freq2Button.setClickingTogglesState(true);
-    freq2Button.setButtonText("2");
-    freq2Button.setColour(TextButton::ColourIds::buttonColourId, juce::Colours::darkorange);
-    freq2Button.setColour(TextButton::ColourIds::buttonOnColourId, juce::Colours::orange);
-    freq2Button.setLookAndFeel(&eqLNF);
-
-    freq3Button.setClickingTogglesState(true);
-    freq3Button.setButtonText("3");
-    freq3Button.setColour(TextButton::ColourIds::buttonColourId, juce::Colours::darkorange);
-    freq3Button.setColour(TextButton::ColourIds::buttonOnColourId, juce::Colours::orange);
-    freq3Button.setLookAndFeel(&eqLNF);
-
-    freq4Button.setClickingTogglesState(true);
-    freq4Button.setButtonText("4");
-    freq4Button.setColour(TextButton::ColourIds::buttonColourId, juce::Colours::darkorange);
-    freq4Button.setColour(TextButton::ColourIds::buttonOnColourId, juce::Colours::orange);
-    freq4Button.setLookAndFeel(&eqLNF);
-
-    freq5Button.setClickingTogglesState(true);
-    freq5Button.setButtonText("5");
-    freq5Button.setColour(TextButton::ColourIds::buttonColourId, juce::Colours::darkorange);
-    freq5Button.setColour(TextButton::ColourIds::buttonOnColourId, juce::Colours::orange);
-    freq5Button.setLookAndFeel(&eqLNF);
-
-    freq6Button.setClickingTogglesState(true);
-    freq6Button.setButtonText("6");
-    freq6Button.setColour(TextButton::ColourIds::buttonColourId, juce::Colours::darkorange);
-    freq6Button.setColour(TextButton::ColourIds::buttonOnColourId, juce::Colours::orange);
-    freq6Button.setLookAndFeel(&eqLNF);
+    freqButtons.clear();
+    for (int i = 0; i < 6; ++i)
+    {
+        auto button = new TextButton ();
+        
+        button->setClickingTogglesState(true);
+        button->setButtonText(std::to_string (i + 1));
+        button->setColour(TextButton::ColourIds::buttonColourId, juce::Colours::darkorange);
+        button->setColour(TextButton::ColourIds::buttonOnColourId, juce::Colours::orange);
+        button->setLookAndFeel(&eqLNF);
+        addAndMakeVisible (button);
+        
+        freqButtons.add (button);
+    }
 
     freq1Combo.addItem("Low Cut",1);
     freq1Combo.addItem("High Cut", 2);
@@ -202,12 +174,7 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
     addAndMakeVisible(scaleSlider);
     addAndMakeVisible(gainSlider);
     addAndMakeVisible(analysisButton);
-    addAndMakeVisible(freq1Button);
-    addAndMakeVisible(freq2Button);
-    addAndMakeVisible(freq3Button);
-    addAndMakeVisible(freq4Button);
-    addAndMakeVisible(freq5Button);
-    addAndMakeVisible(freq6Button);
+
     addAndMakeVisible(freq1Combo);
     addAndMakeVisible(freq2Combo);
     addAndMakeVisible(freq3Combo);
@@ -289,7 +256,8 @@ void SimpleEQAudioProcessorEditor::paint(juce::Graphics &g)
 
 void SimpleEQAudioProcessorEditor::resized()
 {
-
+    presetPannel.setBounds(getLocalBounds().removeFromTop(proportionOfHeight(0.1f)));
+    
     auto width = getWidth();
     auto height = getHeight();
 //  responseCurveComponent.setBounds(getLocalBounds().toFloat()
@@ -337,41 +305,18 @@ void SimpleEQAudioProcessorEditor::resized()
      .withWidth(80.0f / 800.0f * width)
      .withHeight(80.0f / 500.0f * height).toNearestInt());
 
- freq1Button.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(380.0f / 500.0f * height)
-     .withTrimmedLeft(125.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
+    if (freqButtons.size() == 6)
+    {
+        for (int i = 0; i < 6; ++i)
+        {
+            freqButtons[i]->setBounds(getLocalBounds().toFloat()
+                                      .withTrimmedTop(380.0f / 500.0f * height)
+                                      .withTrimmedLeft((125.0f + i * 95.0f) / 800.0f * width)
+                                      .withWidth(80.0f / 800.0f * width)
+                                      .withHeight(27.5f / 500.0f * height).toNearestInt());
+        }
+    }
 
- freq2Button.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(380.0f / 500.0f * height)
-     .withTrimmedLeft(220.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq3Button.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(380.0f / 500.0f * height)
-     .withTrimmedLeft(315.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq4Button.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(380.0f / 500.0f * height)
-     .withTrimmedLeft(410.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq5Button.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(380.0f / 500.0f * height)
-     .withTrimmedLeft(505.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq6Button.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(380.0f / 500.0f * height)
-     .withTrimmedLeft(600.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
  
  //combobox
 
@@ -514,13 +459,13 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         && event.mods.isLeftButtonDown())
     {
         freqSliderAttachment.reset(nullptr);
-        freqSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Freq3", freqSlider));
+        freqSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Freq4", freqSlider));
 
         freqGainSliderAttachment.reset(nullptr);
-        freqGainSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Gain3", freqGainSlider));
+        freqGainSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Gain4", freqGainSlider));
 
         qualitySliderAttachment.reset(nullptr);
-        qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q3", qualitySlider));
+        qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q4", qualitySlider));
 
         selectedFilter = 4;
         repaint();
@@ -533,13 +478,13 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         && event.mods.isLeftButtonDown())
     {
         freqSliderAttachment.reset(nullptr);
-        freqSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Freq3", freqSlider));
+        freqSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Freq5", freqSlider));
 
         freqGainSliderAttachment.reset(nullptr);
-        freqGainSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Gain3", freqGainSlider));
+        freqGainSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Gain5", freqGainSlider));
 
         qualitySliderAttachment.reset(nullptr);
-        qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q3", qualitySlider));
+        qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q5", qualitySlider));
 
         selectedFilter = 5;
         repaint();
@@ -552,15 +497,22 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         && event.mods.isLeftButtonDown())
     {
         freqSliderAttachment.reset(nullptr);
-        freqSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Freq3", freqSlider));
+        freqSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Freq6", freqSlider));
 
         freqGainSliderAttachment.reset(nullptr);
-        freqGainSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Gain3", freqGainSlider));
+        freqGainSliderAttachment.reset(new Attachment(audioProcessor.apvts, "Gain6", freqGainSlider));
 
         qualitySliderAttachment.reset(nullptr);
-        qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q3", qualitySlider));
+        qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q6", qualitySlider));
 
         selectedFilter = 6;
         repaint();
     }
+}
+
+void SimpleEQAudioProcessorEditor::timerCallback()
+{
+    // 判断初始化完成，进行绘制
+    if (freqButtons.size() == 6)
+        resized();
 }

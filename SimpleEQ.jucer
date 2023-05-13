@@ -9,17 +9,15 @@
             file="image/TDMovieOut.0.png" xcodeResource="1"/>
     </GROUP>
     <GROUP id="{983B0C9E-1FAD-C17F-FEE6-FCDB0F5AFFEC}" name="Source">
-      <FILE id="ReMGSz" name="PresetManager.h" compile="0" resource="0" file="../ezcompressor/Source/PresetManager.h"
-            xcodeResource="0"/>
-      <FILE id="AxPkvo" name="PresetPanel.h" compile="0" resource="0" file="../ezcompressor/Source/PresetPanel.h"
-            xcodeResource="0"/>
-      <FILE id="cXkJtA" name="PresetManager.cpp" compile="0" resource="0"
-            file="../ezcompressor/Source/PresetManager.cpp" xcodeResource="0"/>
-      <FILE id="U6sakx" name="PluginProcessor.cpp" compile="0" resource="0"
+      <FILE id="nbIfLj" name="PresetManager.cpp" compile="1" resource="0"
+            file="Source/PresetManager.cpp"/>
+      <FILE id="NtWlkV" name="PresetManager.h" compile="0" resource="0" file="Source/PresetManager.h"/>
+      <FILE id="tMYPo5" name="PresetPanel.h" compile="0" resource="0" file="Source/PresetPanel.h"/>
+      <FILE id="U6sakx" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp" xcodeResource="0"/>
       <FILE id="Pdu9ef" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h" xcodeResource="0"/>
-      <FILE id="JxuuO8" name="PluginEditor.cpp" compile="0" resource="0"
+      <FILE id="JxuuO8" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp" xcodeResource="0"/>
       <FILE id="pNq9xI" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"
             xcodeResource="0"/>

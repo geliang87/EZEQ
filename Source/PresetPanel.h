@@ -4,7 +4,7 @@
 
 namespace Gui
 {
-	class SimpleEQLookAndFeel : public LookAndFeel_V4
+	class PresetPanelLookAndFeel : public LookAndFeel_V4
 	{
 		void drawButtonBackground(Graphics& g,
 			Button& button,
@@ -173,7 +173,7 @@ namespace Gui
 		Service::PresetManager& presetManager;
 		TextButton saveButton, deleteButton, previousPresetButton, nextPresetButton;
 		ComboBox presetList;
-		SimpleEQLookAndFeel presetLNF;
+        PresetPanelLookAndFeel presetLNF;
 		std::unique_ptr<FileChooser> fileChooser;
 
 		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PresetPanel)
