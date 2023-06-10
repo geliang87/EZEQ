@@ -64,6 +64,7 @@ public:
     
     using Filter = juce::dsp::IIR::Filter<float>;
     dsp::ProcessorChain<Filter, Filter, Filter, Filter, Filter, Filter> leftChain, rightChain;
+    float lowCutFreq = 100.0f, lowCutQ = 1.0f;
     
     enum ChainPosition
     {
@@ -74,6 +75,11 @@ public:
         filter5,
         highCut
     };
+    
+    void updateCoefficients (Filter::CoefficientsPtr &old, const Filter::CoefficientsPtr &replacements)
+    {
+        *old = *replacements;
+    }
     
 private:
     

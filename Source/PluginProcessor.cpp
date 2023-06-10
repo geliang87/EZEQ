@@ -139,7 +139,20 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     rightChain.prepare (spec);
     
     // 配置滤波器默认值
-
+    // lowCut
+    auto& leftLowCut = leftChain.get<ChainPosition::lowCut>();
+    auto& rightLowCut = rightChain.get<ChainPosition::lowCut>();
+    
+    auto newCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), lowCutFreq, lowCutQ);
+    
+    updateCoefficients (leftLowCut.coefficients, newCoefficients);
+    updateCoefficients (rightLowCut.coefficients, newCoefficients);
+    
+    // filter2
+    // filter3
+    // filter4
+    // filter5
+    // highCut
 }
 
 void SimpleEQAudioProcessor::releaseResources()
@@ -225,6 +238,43 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
 {
     DBG (parameterID);
     DBG (std::to_string (newValue));
+    
+    if (parameterID.startsWith ("Freq"))
+    {
+        auto lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
+        
+        switch (lastDigit)
+        {
+            case 1:
+                auto& leftLowCut = leftChain.get<ChainPosition::lowCut>();
+                auto& rightLowCut = rightChain.get<ChainPosition::lowCut>();
+                
+                lowCutFreq = newValue;
+                auto newCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), lowCutFreq, lowCutQ);
+                
+                updateCoefficients (leftLowCut.coefficients, newCoefficients);
+                updateCoefficients (rightLowCut.coefficients, newCoefficients);
+                break;
+        }
+    }
+    else if (parameterID.startsWith ("Q"))
+    {
+        auto lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
+        
+        switch (lastDigit)
+        {
+            case 1:
+                auto& leftLowCut = leftChain.get<ChainPosition::lowCut>();
+                auto& rightLowCut = rightChain.get<ChainPosition::lowCut>();
+                
+                lowCutQ = newValue;
+                auto newCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), lowCutFreq, lowCutQ);
+                
+                updateCoefficients (leftLowCut.coefficients, newCoefficients);
+                updateCoefficients (rightLowCut.coefficients, newCoefficients);
+                break;
+        }
+    }
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::createParameterLayout()
