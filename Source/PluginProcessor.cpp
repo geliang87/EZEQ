@@ -143,16 +143,59 @@ void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     auto& leftLowCut = leftChain.get<ChainPosition::lowCut>();
     auto& rightLowCut = rightChain.get<ChainPosition::lowCut>();
     
-    auto newCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), lowCutFreq, lowCutQ);
+    auto lowCutCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), lowCutFreq, lowCutQ);
     
-    updateCoefficients (leftLowCut.coefficients, newCoefficients);
-    updateCoefficients (rightLowCut.coefficients, newCoefficients);
+    updateCoefficients (leftLowCut.coefficients, lowCutCoefficients);
+    updateCoefficients (rightLowCut.coefficients, lowCutCoefficients);
     
     // filter2
+
+    auto& leftFilter2 = leftChain.get<ChainPosition::filter2>();
+    auto& rightFilter2 = rightChain.get<ChainPosition::filter2>();
+
+    auto filter2Coefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter2Freq, filter2Q, filter2Gain);
+
+    updateCoefficients(leftFilter2.coefficients, filter2Coefficients);
+    updateCoefficients(rightFilter2.coefficients, filter2Coefficients);
+
     // filter3
+
+    auto& leftFilter3 = leftChain.get<ChainPosition::filter3>();
+    auto& rightFilter3 = rightChain.get<ChainPosition::filter3>();
+
+    auto filter3Coefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter3Freq, filter3Q, filter3Gain);
+
+    updateCoefficients(leftFilter3.coefficients, filter3Coefficients);
+    updateCoefficients(rightFilter3.coefficients, filter3Coefficients);
+
     // filter4
+
+    auto& leftFilter4 = leftChain.get<ChainPosition::filter4>();
+    auto& rightFilter4 = rightChain.get<ChainPosition::filter4>();
+
+    auto filter4Coefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter4Freq, filter4Q, filter4Gain);
+
+    updateCoefficients(leftFilter4.coefficients, filter4Coefficients);
+    updateCoefficients(rightFilter4.coefficients, filter4Coefficients);
+
     // filter5
+    
+    auto& leftFilter5 = leftChain.get<ChainPosition::filter5>();
+    auto& rightFilter5 = rightChain.get<ChainPosition::filter5>();
+
+    auto filter5Coefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter5Freq, filter5Q, filter5Gain);
+
+    updateCoefficients(leftFilter5.coefficients, filter5Coefficients);
+    updateCoefficients(rightFilter5.coefficients, filter5Coefficients);
+
     // highCut
+    auto& leftHighCut = leftChain.get<ChainPosition::highCut>();
+    auto& rightHighCut = rightChain.get<ChainPosition::highCut>();
+
+    auto highCutCoefficients = dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), highCutFreq, highCutQ);
+
+    updateCoefficients(leftHighCut.coefficients, highCutCoefficients);
+    updateCoefficients(rightHighCut.coefficients, highCutCoefficients);
 }
 
 void SimpleEQAudioProcessor::releaseResources()
@@ -251,7 +294,7 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
                 
                 lowCutFreq = newValue;
                 auto newCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), lowCutFreq, lowCutQ);
-                
+
                 updateCoefficients (leftLowCut.coefficients, newCoefficients);
                 updateCoefficients (rightLowCut.coefficients, newCoefficients);
                 break;

@@ -64,7 +64,11 @@ public:
     
     using Filter = juce::dsp::IIR::Filter<float>;
     dsp::ProcessorChain<Filter, Filter, Filter, Filter, Filter, Filter> leftChain, rightChain;
-    float lowCutFreq = 100.0f, lowCutQ = 1.0f;
+    float lowCutFreq = 100.0f, lowCutQ = 1.0f, highCutFreq = 20000.0f, highCutQ = 1.0f;
+    float filter2Freq, filter2Q, filter2Gain;
+    float filter3Freq, filter3Q, filter3Gain;
+    float filter4Freq, filter4Q, filter4Gain;
+    float filter5Freq, filter5Q, filter5Gain;
     
     enum ChainPosition
     {

@@ -81,66 +81,26 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
         freqButtons.add (button);
     }
 
-    freq1Combo.addItem("Low Cut",1);
-    freq1Combo.addItem("High Cut", 2);
-    freq1Combo.addItem("Bell", 3);
-    freq1Combo.addItem("Notch", 4);
-    freq1Combo.addItem("Band Pass", 5);
-    freq1Combo.setColour(ComboBox::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq1Combo.setColour(ComboBox::ColourIds::outlineColourId, juce::Colours::lightyellow);
-    freq1Combo.setColour(PopupMenu::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq1Combo.setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
+    freqCombos.clear();
+    for (int i = 0; i < 6; ++i)
+    {
+        auto combo = new ComboBox();
+
+        combo->addItem("Low Cut", 1);
+        combo->addItem("High Cut", 2);
+        combo->addItem("Bell", 3);
+        combo->addItem("Notch", 4);
+        combo->addItem("Band Pass", 5);
+        combo->setColour(ComboBox::ColourIds::backgroundColourId, juce::Colours::darkorange);
+        combo->setColour(ComboBox::ColourIds::outlineColourId, juce::Colours::lightyellow);
+        combo->setColour(PopupMenu::ColourIds::backgroundColourId, juce::Colours::darkorange);
+        combo->setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
+
     
+        addAndMakeVisible(combo);
 
-    freq2Combo.addItem("Low Cut", 1);
-    freq2Combo.addItem("High Cut", 2);
-    freq2Combo.addItem("Bell", 3);
-    freq2Combo.addItem("Notch", 4);
-    freq2Combo.addItem("Band Pass", 5);
-    freq2Combo.setColour(ComboBox::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq2Combo.setColour(ComboBox::ColourIds::outlineColourId, juce::Colours::lightyellow);
-    freq2Combo.setColour(PopupMenu::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq2Combo.setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
-
-    freq3Combo.addItem("Low Cut", 1);
-    freq3Combo.addItem("High Cut", 2);
-    freq3Combo.addItem("Bell", 3);
-    freq3Combo.addItem("Notch", 4);
-    freq3Combo.addItem("Band Pass", 5);
-    freq3Combo.setColour(ComboBox::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq3Combo.setColour(ComboBox::ColourIds::outlineColourId, juce::Colours::lightyellow);
-    freq3Combo.setColour(PopupMenu::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq3Combo.setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
-
-    freq4Combo.addItem("Low Cut", 1);
-    freq4Combo.addItem("High Cut", 2);
-    freq4Combo.addItem("Bell", 3);
-    freq4Combo.addItem("Notch", 4);
-    freq4Combo.addItem("Band Pass", 5);
-    freq4Combo.setColour(ComboBox::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq4Combo.setColour(ComboBox::ColourIds::outlineColourId, juce::Colours::lightyellow);
-    freq4Combo.setColour(PopupMenu::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq4Combo.setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
-
-    freq5Combo.addItem("Low Cut", 1);
-    freq5Combo.addItem("High Cut", 2);
-    freq5Combo.addItem("Bell", 3);
-    freq5Combo.addItem("Notch", 4);
-    freq5Combo.addItem("Band Pass", 5);
-    freq5Combo.setColour(ComboBox::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq5Combo.setColour(ComboBox::ColourIds::outlineColourId, juce::Colours::lightyellow);
-    freq5Combo.setColour(PopupMenu::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq5Combo.setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
-
-    freq6Combo.addItem("Low Cut", 1);
-    freq6Combo.addItem("High Cut", 2);
-    freq6Combo.addItem("Bell", 3);
-    freq6Combo.addItem("Notch", 4);
-    freq6Combo.addItem("Band Pass", 5);
-    freq6Combo.setColour(ComboBox::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq6Combo.setColour(ComboBox::ColourIds::outlineColourId, juce::Colours::lightyellow);
-    freq6Combo.setColour(PopupMenu::ColourIds::backgroundColourId, juce::Colours::darkorange);
-    freq6Combo.setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
+        freqCombos.add(combo);
+    }
 
     freqText.setText("Freq", NotificationType::dontSendNotification);
     freqText.setFont(18.0f);
@@ -175,12 +135,6 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
     addAndMakeVisible(gainSlider);
     addAndMakeVisible(analysisButton);
 
-    addAndMakeVisible(freq1Combo);
-    addAndMakeVisible(freq2Combo);
-    addAndMakeVisible(freq3Combo);
-    addAndMakeVisible(freq4Combo);
-    addAndMakeVisible(freq5Combo);
-    addAndMakeVisible(freq6Combo);
     addAndMakeVisible(freqText);
     addAndMakeVisible(freqGainText);
     addAndMakeVisible(quailtyText);
@@ -317,44 +271,18 @@ void SimpleEQAudioProcessorEditor::resized()
         }
     }
 
- 
- //combobox
+    if (freqCombos.size() == 6)
+    {
+        for (int i = 0; i < 6; ++i)
+        {
+            freqCombos[i]->setBounds(getLocalBounds().toFloat()
+                .withTrimmedTop(407.5f / 500.0f * height)
+                .withTrimmedLeft((125.0f + i * 95.0f) / 800.0f * width)
+                .withWidth(80.0f / 800.0f * width)
+                .withHeight(27.5f / 500.0f * height).toNearestInt());
+        }
+    }
 
- freq1Combo.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(407.5f / 500.0f * height)
-     .withTrimmedLeft(125.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq2Combo.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(407.5f / 500.0f * height)
-     .withTrimmedLeft(220.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq3Combo.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(407.5f / 500.0f * height)
-     .withTrimmedLeft(315.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq4Combo.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(407.5f / 500.0f * height)
-     .withTrimmedLeft(410.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq5Combo.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(407.5f / 500.0f * height)
-     .withTrimmedLeft(505.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
-
- freq6Combo.setBounds(getLocalBounds().toFloat()
-     .withTrimmedTop(407.5f / 500.0f * height)
-     .withTrimmedLeft(600.0f / 800.0f * width)
-     .withWidth(80.0f / 800.0f * width)
-     .withHeight(27.5f / 500.0f * height).toNearestInt());
 
  //label text
 
