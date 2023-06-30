@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="qiwasR" name="SimpleEQ" projectType="audioplug" jucerFormatVersion="1"
-              cppLanguageStandard="17" companyName="Matkat Music LLC" companyCopyright="2021 Matkat Music LLC"
-              companyWebsite="https://www.programmingformusicians.com">
-  <MAINGROUP id="YPklBH" name="SimpleEQ">
+<JUCERPROJECT id="qiwasR" name="EZEQ" projectType="audioplug" jucerFormatVersion="1"
+              cppLanguageStandard="17" companyName="Lujun&amp;LG" companyCopyright="2023">
+  <MAINGROUP id="YPklBH" name="EZEQ">
     <GROUP id="{E678942E-D8A3-50DC-DD6C-DEF5F4BCC8F3}" name="image">
       <FILE id="jk9mBh" name="TDMovieOut.0.png" compile="0" resource="1"
             file="image/TDMovieOut.0.png" xcodeResource="1"/>

@@ -124,10 +124,9 @@ private:
     Gui::PresetPanel presetPannel;
 
     juce::Slider freqSlider, freqGainSlider, qualitySlider, scaleSlider, gainSlider;
-    juce::TextButton analysisButton/*, freq1Button, freq2Button, freq3Button, freq4Button, freq5Button, freq6Button*/;
+    juce::TextButton analysisButton;
     OwnedArray<juce::TextButton> freqButtons;
     OwnedArray<juce::ComboBox> freqCombos;
-    juce::ComboBox freq1Combo, freq2Combo, freq3Combo, freq4Combo, freq5Combo, freq6Combo;
     juce::Label freqText, freqGainText, quailtyText, scaleText, gainText;
     /*ResponseCurveComponent responseCurveComponent;*/
     

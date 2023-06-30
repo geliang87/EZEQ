@@ -127,7 +127,6 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
     gainText.setJustificationType(Justification::centred);
     gainText.setColour(Label::ColourIds::textColourId, Colours::lightyellow);
 
-
     addAndMakeVisible(freqSlider);
     addAndMakeVisible(freqGainSlider);
     addAndMakeVisible(qualitySlider);

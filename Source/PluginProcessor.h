@@ -64,11 +64,26 @@ public:
     
     using Filter = juce::dsp::IIR::Filter<float>;
     dsp::ProcessorChain<Filter, Filter, Filter, Filter, Filter, Filter> leftChain, rightChain;
-    float lowCutFreq = 100.0f, lowCutQ = 1.0f, highCutFreq = 20000.0f, highCutQ = 1.0f;
-    float filter2Freq, filter2Q, filter2Gain;
-    float filter3Freq, filter3Q, filter3Gain;
-    float filter4Freq, filter4Q, filter4Gain;
-    float filter5Freq, filter5Q, filter5Gain;
+    
+    enum FilterType
+    {
+        lowCutType,
+        highCutType,
+        bellType,
+        notchType,
+        bandPassType
+    };
+    
+    float lowCutFreq = 100.0f, lowCutQ = 1.0f;
+    FilterType filter2Type = FilterType::bellType;
+    float filter2Freq = 200.0f, filter2Q = 0.707f, filter2Gain = 1.0f;
+    FilterType filter3Type = FilterType::bellType;
+    float filter3Freq = 400.0f, filter3Q = 0.707f, filter3Gain = 1.0f;
+    FilterType filter4Type = FilterType::bellType;
+    float filter4Freq = 800.0f, filter4Q = 0.707f, filter4Gain = 1.0f;
+    FilterType filter5Type = FilterType::bellType;
+    float filter5Freq = 1600.0f, filter5Q = 0.707f, filter5Gain = 1.0f;
+    float highCutFreq = 20000.0f, highCutQ = 1.0f;
     
     enum ChainPosition
     {
@@ -84,6 +99,8 @@ public:
     {
         *old = *replacements;
     }
+    
+    void updateFilterSetup (int filterIndex, FilterType type, float freq, float Q, float gain);
     
 private:
     

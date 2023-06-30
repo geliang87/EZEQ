@@ -284,37 +284,65 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
     
     if (parameterID.startsWith ("Freq"))
     {
-        auto lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
+        int lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
         
         switch (lastDigit)
         {
             case 1:
-                auto& leftLowCut = leftChain.get<ChainPosition::lowCut>();
-                auto& rightLowCut = rightChain.get<ChainPosition::lowCut>();
-                
                 lowCutFreq = newValue;
-                auto newCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), lowCutFreq, lowCutQ);
-
-                updateCoefficients (leftLowCut.coefficients, newCoefficients);
-                updateCoefficients (rightLowCut.coefficients, newCoefficients);
+                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
+                break;
+                
+            case 2:
+                filter2Freq = newValue;
+                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                break;
+                
+            case 6:
+                highCutFreq = newValue;
+                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
                 break;
         }
     }
     else if (parameterID.startsWith ("Q"))
     {
-        auto lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
+        int lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
         
         switch (lastDigit)
         {
             case 1:
-                auto& leftLowCut = leftChain.get<ChainPosition::lowCut>();
-                auto& rightLowCut = rightChain.get<ChainPosition::lowCut>();
-                
                 lowCutQ = newValue;
-                auto newCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), lowCutFreq, lowCutQ);
+                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
+                break;
+            
+            case 2:
+                filter2Q = newValue;
+                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                break;
                 
-                updateCoefficients (leftLowCut.coefficients, newCoefficients);
-                updateCoefficients (rightLowCut.coefficients, newCoefficients);
+            case 6:
+                highCutQ = newValue;
+                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
+                break;
+        }
+    }
+    else if (parameterID.startsWith ("Gain"))
+    {
+        int lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
+        
+        switch (lastDigit)
+        {
+            case 1:
+                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
+                break;
+            
+            case 2:
+                filter2Gain = Decibels::decibelsToGain (newValue);
+                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                break;
+                
+            case 6:
+                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
                 break;
         }
     }
@@ -350,16 +378,42 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
         
         layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {typeString, 1},
                                                                 typeString,
-                                                                StringArray ("Low Cut", "High Cut", "Bell", "Notch", "band Pass"),
+                                                                StringArray ("Low Cut", "High Cut", "Bell", "Notch", "Band Pass"),
                                                                 1));
         
         String freqString ("Freq");
         freqString << i;
         
-        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {freqString, 1},
-                                                                 freqString,
-                                                                 juce::NormalisableRange<float> (20.f, 20000.f, 1.f),
-                                                                 100.f));
+        if (i == 1)
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {freqString, 1},
+                                                                     freqString,
+                                                                     juce::NormalisableRange<float> (20.f, 20000.f, 1.f),
+                                                                     100.f));
+        else if (i == 2)
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {freqString, 1},
+                                                                     freqString,
+                                                                     juce::NormalisableRange<float> (20.f, 20000.f, 1.f),
+                                                                     200.f));
+        else if (i == 3)
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {freqString, 1},
+                                                                     freqString,
+                                                                     juce::NormalisableRange<float> (20.f, 20000.f, 1.f),
+                                                                     400.f));
+        else if (i == 4)
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {freqString, 1},
+                                                                     freqString,
+                                                                     juce::NormalisableRange<float> (20.f, 20000.f, 1.f),
+                                                                     800.f));
+        else if (i == 5)
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {freqString, 1},
+                                                                     freqString,
+                                                                     juce::NormalisableRange<float> (20.f, 20000.f, 1.f),
+                                                                     1600.f));
+        else if (i == 6)
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {freqString, 1},
+                                                                     freqString,
+                                                                     juce::NormalisableRange<float> (20.f, 20000.f, 1.f),
+                                                                     20000.f));
         
         String gainString ("Gain");
         gainString << i;
@@ -379,6 +433,194 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
     }
     
     return layout;
+}
+
+void SimpleEQAudioProcessor::updateFilterSetup (int filterIndex, FilterType type, float freq, float Q, float gain)
+{
+    if (filterIndex == 1)
+    {
+        auto& filterLeft = leftChain.get<ChainPosition::lowCut>();
+        auto& filterRight = rightChain.get<ChainPosition::lowCut>();
+        
+        auto lowCutCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), freq, Q);
+        
+        updateCoefficients (filterLeft.coefficients, lowCutCoefficients);
+        updateCoefficients (filterRight.coefficients, lowCutCoefficients);
+    }
+    else if (filterIndex == 2)
+    {
+        auto& filterLeft = leftChain.get<ChainPosition::filter2>();
+        auto& filterRight = rightChain.get<ChainPosition::filter2>();
+        
+        if (type == FilterType::lowCutType)
+        {
+            auto lowCutCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), filter2Freq, filter2Q);
+            
+            updateCoefficients (filterLeft.coefficients, lowCutCoefficients);
+            updateCoefficients (filterRight.coefficients, lowCutCoefficients);
+        }
+        else if (type == FilterType::highCutType)
+        {
+            auto highCutCoefficients = dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), filter2Freq, filter2Q);
+
+            updateCoefficients(filterLeft.coefficients, highCutCoefficients);
+            updateCoefficients(filterRight.coefficients, highCutCoefficients);
+        }
+        else if (type == FilterType::bellType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter2Freq, filter2Q, filter2Gain);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+        else if (type == FilterType::notchType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makeNotch(getSampleRate(), filter2Freq, filter2Q);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+        else if (type == FilterType::bandPassType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makeBandPass(getSampleRate(), filter2Freq, filter2Q);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+    }
+    else if (filterIndex == 3)
+    {
+        auto& filterLeft = leftChain.get<ChainPosition::filter3>();
+        auto& filterRight = rightChain.get<ChainPosition::filter3>();
+        
+        if (type == FilterType::lowCutType)
+        {
+            auto lowCutCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), filter3Freq, filter3Q);
+            
+            updateCoefficients (filterLeft.coefficients, lowCutCoefficients);
+            updateCoefficients (filterRight.coefficients, lowCutCoefficients);
+        }
+        else if (type == FilterType::highCutType)
+        {
+            auto highCutCoefficients = dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), filter3Freq, filter3Q);
+
+            updateCoefficients(filterLeft.coefficients, highCutCoefficients);
+            updateCoefficients(filterRight.coefficients, highCutCoefficients);
+        }
+        else if (type == FilterType::bellType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter3Freq, filter3Q, filter3Gain);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+        else if (type == FilterType::notchType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makeNotch(getSampleRate(), filter3Freq, filter3Q);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+        else if (type == FilterType::bandPassType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makeBandPass(getSampleRate(), filter3Freq, filter3Q);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+    }
+    else if (filterIndex == 4)
+    {
+        auto& filterLeft = leftChain.get<ChainPosition::filter4>();
+        auto& filterRight = rightChain.get<ChainPosition::filter4>();
+        
+        if (type == FilterType::lowCutType)
+        {
+            auto lowCutCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), filter4Freq, filter4Q);
+            
+            updateCoefficients (filterLeft.coefficients, lowCutCoefficients);
+            updateCoefficients (filterRight.coefficients, lowCutCoefficients);
+        }
+        else if (type == FilterType::highCutType)
+        {
+            auto highCutCoefficients = dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), filter4Freq, filter4Q);
+
+            updateCoefficients(filterLeft.coefficients, highCutCoefficients);
+            updateCoefficients(filterRight.coefficients, highCutCoefficients);
+        }
+        else if (type == FilterType::bellType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter4Freq, filter4Q, filter4Gain);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+        else if (type == FilterType::notchType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makeNotch(getSampleRate(), filter4Freq, filter4Q);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+        else if (type == FilterType::bandPassType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makeBandPass(getSampleRate(), filter4Freq, filter4Q);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+    }
+    else if (filterIndex == 5)
+    {
+        auto& filterLeft = leftChain.get<ChainPosition::filter5>();
+        auto& filterRight = rightChain.get<ChainPosition::filter5>();
+        
+        if (type == FilterType::lowCutType)
+        {
+            auto lowCutCoefficients = dsp::IIR::Coefficients<float>::makeHighPass (getSampleRate(), filter5Freq, filter5Q);
+            
+            updateCoefficients (filterLeft.coefficients, lowCutCoefficients);
+            updateCoefficients (filterRight.coefficients, lowCutCoefficients);
+        }
+        else if (type == FilterType::highCutType)
+        {
+            auto highCutCoefficients = dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), filter5Freq, filter5Q);
+
+            updateCoefficients(filterLeft.coefficients, highCutCoefficients);
+            updateCoefficients(filterRight.coefficients, highCutCoefficients);
+        }
+        else if (type == FilterType::bellType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter5Freq, filter5Q, filter5Gain);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+        else if (type == FilterType::notchType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makeNotch(getSampleRate(), filter5Freq, filter5Q);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+        else if (type == FilterType::bandPassType)
+        {
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makeBandPass(getSampleRate(), filter5Freq, filter5Q);
+
+            updateCoefficients(filterLeft.coefficients, newCoefficients);
+            updateCoefficients(filterRight.coefficients, newCoefficients);
+        }
+    }
+    else if (filterIndex == 6)
+    {
+        auto& filterLeft = leftChain.get<ChainPosition::highCut>();
+        auto& filterRight = rightChain.get<ChainPosition::highCut>();
+        
+        auto highCutCoefficients = dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), highCutFreq, highCutQ);
+
+        updateCoefficients(filterLeft.coefficients, highCutCoefficients);
+        updateCoefficients(filterRight.coefficients, highCutCoefficients);
+    }
 }
 
 //==============================================================================
