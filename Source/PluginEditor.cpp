@@ -34,6 +34,7 @@ ResponseCurveComponent::~ResponseCurveComponent()
 void ResponseCurveComponent::paint(juce::Graphics& g)
 {
     drawBackgroundGrid (g);
+    drawTextLabels (g);
 }
 
 void ResponseCurveComponent::resized()
@@ -58,10 +59,91 @@ void ResponseCurveComponent::timerCallback()
 void ResponseCurveComponent::updateResponseCurve()
 {}
 
-void ResponseCurveComponent::drawBackgroundGrid(juce::Graphics& g)
+void ResponseCurveComponent::drawBackgroundGrid (juce::Graphics& g)
 {
     g.setColour (juce::Colours::black);
     g.fillAll();
+    
+    auto areaAnalysis = getLocalBounds();
+    areaAnalysis.removeFromTop (16);
+    areaAnalysis.removeFromBottom (6);
+    areaAnalysis.removeFromLeft (20);
+    areaAnalysis.removeFromRight (20);
+    
+    g.setColour (juce::Colours::white);
+    
+    // 绘制竖线
+    for (auto f : frequencies)
+    {
+        auto normX = juce::mapFromLog10 (f, 20.f, 20000.f);
+        g.drawVerticalLine (areaAnalysis.getX() + areaAnalysis.getWidth() * normX,
+                            areaAnalysis.getY(),
+                            areaAnalysis.getBottom());
+    }
+    
+    // 绘制横线
+    for (auto gDb : gains)
+    {
+        auto y = jmap (gDb, -24.f, 24.f, float (areaAnalysis.getBottom()), float (areaAnalysis.getY()));
+        g.drawHorizontalLine (y,
+                              areaAnalysis.getX(),
+                              areaAnalysis.getRight());
+    }
+}
+
+void ResponseCurveComponent::drawTextLabels (juce::Graphics& g)
+{
+    auto areaAnalysis = getLocalBounds();
+    areaAnalysis.removeFromTop (16);
+    areaAnalysis.removeFromBottom (6);
+    areaAnalysis.removeFromLeft (20);
+    areaAnalysis.removeFromRight (20);
+    
+    g.setFont (10);
+    
+    // 绘制频率字符
+    for (auto f : frequencies)
+    {
+        auto normX = juce::mapFromLog10 (f, 20.f, 20000.f);
+        
+        bool addK = false;
+        String str;
+        if( f > 999.f )
+        {
+            addK = true;
+            f /= 1000.f;
+        }
+
+        str << f;
+        if( addK )
+            str << "k";
+        str << "Hz";
+        
+        Rectangle<int> r;
+        r.setSize (g.getCurrentFont().getStringWidth(str), 10);
+        r.setCentre(areaAnalysis.getX() + areaAnalysis.getWidth() * normX, 0);
+        r.setY(1);
+        
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+    }
+    
+    // 绘制dB字符
+    for (auto gDb : gains)
+    {
+        auto y = jmap (gDb, -24.f, 24.f, float (areaAnalysis.getBottom()), float (areaAnalysis.getY()));
+        
+        String str;
+        if( gDb > 0 )
+            str << "+";
+        str << gDb;
+        
+        Rectangle<int> r;
+        r.setSize (g.getCurrentFont().getStringWidth(str), 10);
+        r.setX (getWidth() - g.getCurrentFont().getStringWidth(str));
+        r.setCentre (r.getCentreX(), y);
+        
+        g.drawFittedText(str, r, juce::Justification::centredLeft, 1);
+    }
 }
 
 //==============================================================================

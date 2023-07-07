@@ -36,7 +36,17 @@ private:
     
     juce::Atomic<bool> parametersChanged { false };
     
-    void drawBackgroundGrid(juce::Graphics& g);
+    // 频率轴
+    Array<float> frequencies { 20, 50, 100,
+                               200, 500, 1000,
+                               2000, 5000, 10000,
+                               20000 };
+    
+    // 幅度轴
+    Array<float> gains { -24, -12, 0, 12, 24 };
+    
+    void drawBackgroundGrid (juce::Graphics& g);
+    void drawTextLabels (juce::Graphics& g);
 };
 
 //==============================================================================
