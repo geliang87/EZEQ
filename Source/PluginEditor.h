@@ -126,15 +126,16 @@ private:
     juce::Slider freqSlider, freqGainSlider, qualitySlider, scaleSlider, gainSlider;
     juce::TextButton analysisButton;
     OwnedArray<juce::TextButton> freqButtons;
-    OwnedArray<juce::ComboBox> freqCombos;
+    OwnedArray<juce::ComboBox> typeCombos;
     juce::Label freqText, freqGainText, quailtyText, scaleText, gainText;
-    /*ResponseCurveComponent responseCurveComponent;*/
     
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     
     std::unique_ptr<Attachment> scaleSliderAttachment,gainSliderAttachment,
     freqSliderAttachment, freqGainSliderAttachment, qualitySliderAttachment;
+    
+    OwnedArray<APVTS::ComboBoxAttachment> typeComboBoxAttachments;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessorEditor)
 };

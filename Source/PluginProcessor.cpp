@@ -298,6 +298,21 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
                 updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
                 break;
                 
+            case 3:
+                filter3Freq = newValue;
+                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain);
+                break;
+                
+            case 4:
+                filter4Freq = newValue;
+                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain);
+                break;
+                
+            case 5:
+                filter5Freq = newValue;
+                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
+                break;
+                
             case 6:
                 highCutFreq = newValue;
                 updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
@@ -320,6 +335,21 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
                 updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
                 break;
                 
+            case 3:
+                filter3Q = newValue;
+                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain);
+                break;
+                
+            case 4:
+                filter4Q = newValue;
+                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain);
+                break;
+                
+            case 5:
+                filter2Q = newValue;
+                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
+                break;
+                
             case 6:
                 highCutQ = newValue;
                 updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
@@ -339,6 +369,56 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
             case 2:
                 filter2Gain = Decibels::decibelsToGain (newValue);
                 updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                break;
+                
+            case 3:
+                filter3Gain = Decibels::decibelsToGain (newValue);
+                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain);
+                break;
+                
+            case 4:
+                filter4Gain = Decibels::decibelsToGain (newValue);
+                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain);
+                break;
+                
+            case 5:
+                filter5Gain = Decibels::decibelsToGain (newValue);
+                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
+                break;
+                
+            case 6:
+                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
+                break;
+        }
+    }
+    else if (parameterID.startsWith ("Type"))
+    {
+        int lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
+        
+        switch (lastDigit)
+        {
+            case 1:
+                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
+                break;
+            
+            case 2:
+                filter2Type = static_cast<FilterType> (newValue);
+                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                break;
+                
+            case 3:
+                filter3Gain = static_cast<FilterType> (newValue);
+                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain);
+                break;
+                
+            case 4:
+                filter4Gain = static_cast<FilterType> (newValue);
+                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain);
+                break;
+                
+            case 5:
+                filter5Gain = static_cast<FilterType> (newValue);
+                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
                 break;
                 
             case 6:
@@ -376,10 +456,21 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
         String typeString ("Type");
         typeString << i;
         
-        layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {typeString, 1},
-                                                                typeString,
-                                                                StringArray ("Low Cut", "High Cut", "Bell", "Notch", "Band Pass"),
-                                                                1));
+        if (i == 1)
+            layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {typeString, 1},
+                                                                      typeString,
+                                                                      StringArray ("Low Cut", "High Cut", "Bell", "Notch", "Band Pass"),
+                                                                      0));
+        else if (i == 6)
+            layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {typeString, 1},
+                                                                      typeString,
+                                                                      StringArray ("Low Cut", "High Cut", "Bell", "Notch", "Band Pass"),
+                                                                      1));
+        else
+            layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {typeString, 1},
+                                                                      typeString,
+                                                                      StringArray ("Low Cut", "High Cut", "Bell", "Notch", "Band Pass"),
+                                                                      2));
         
         String freqString ("Freq");
         freqString << i;

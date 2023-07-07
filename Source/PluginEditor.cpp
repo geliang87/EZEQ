@@ -81,7 +81,7 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
         freqButtons.add (button);
     }
 
-    freqCombos.clear();
+    typeCombos.clear();
     for (int i = 0; i < 6; ++i)
     {
         auto combo = new ComboBox();
@@ -96,10 +96,9 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
         combo->setColour(PopupMenu::ColourIds::backgroundColourId, juce::Colours::darkorange);
         combo->setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
 
-    
         addAndMakeVisible(combo);
 
-        freqCombos.add(combo);
+        typeCombos.add(combo);
     }
 
     freqText.setText("Freq", NotificationType::dontSendNotification);
@@ -145,6 +144,14 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
     freqSliderAttachment.reset(new Attachment (audioProcessor.apvts, "Freq1", freqSlider));
     freqGainSliderAttachment.reset(new Attachment (audioProcessor.apvts, "Gain1", freqGainSlider));
     qualitySliderAttachment.reset(new Attachment (audioProcessor.apvts, "Q1", qualitySlider));
+    
+    for (int i = 0; i < 6; ++i)
+    {
+        String typeString ("Type");
+        typeString << i + 1;
+        
+        typeComboBoxAttachments.add (new APVTS::ComboBoxAttachment (audioProcessor.apvts, typeString, *typeCombos[i]));
+    }
 }
 
 SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
@@ -213,12 +220,6 @@ void SimpleEQAudioProcessorEditor::resized()
     
     auto width = getWidth();
     auto height = getHeight();
-//  responseCurveComponent.setBounds(getLocalBounds().toFloat()
-//         .withTrimmedLeft (12.5f / 50.0f * height)
-//        .withTrimmedTop (6.0f / 80.0f * width)
-//        .withWidth (55.5f / 80.0f * width)
-//        .withHeight (29.0f / 50.0f * height).toNearestInt());
-    
 
    freqSlider.setBounds(getLocalBounds().toFloat()
         .withTrimmedTop(80.0f / 500.0f * height)
@@ -270,11 +271,11 @@ void SimpleEQAudioProcessorEditor::resized()
         }
     }
 
-    if (freqCombos.size() == 6)
+    if (typeCombos.size() == 6)
     {
         for (int i = 0; i < 6; ++i)
         {
-            freqCombos[i]->setBounds(getLocalBounds().toFloat()
+            typeCombos[i]->setBounds(getLocalBounds().toFloat()
                 .withTrimmedTop(407.5f / 500.0f * height)
                 .withTrimmedLeft((125.0f + i * 95.0f) / 800.0f * width)
                 .withWidth(80.0f / 800.0f * width)
