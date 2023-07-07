@@ -12,6 +12,34 @@
 #include "PluginProcessor.h"
 #include "PresetPanel.h"
 
+//==============================================================================
+class ResponseCurveComponent: public juce::Component,
+                                     juce::AudioProcessorParameter::Listener,
+                                     juce::Timer
+{
+public:
+    ResponseCurveComponent (SimpleEQAudioProcessor&);
+    ~ResponseCurveComponent();
+    
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+    
+    void parameterValueChanged (int parameterIndex, float newValue) override;
+    void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
+    
+    void timerCallback() override;
+    
+    void updateResponseCurve();
+    
+private:
+    SimpleEQAudioProcessor& audioProcessor;
+    
+    juce::Atomic<bool> parametersChanged { false };
+    
+    void drawBackgroundGrid(juce::Graphics& g);
+};
+
+//==============================================================================
 /**
 */
 class SimpleEQLookAndFeel : public LookAndFeel_V4
@@ -96,6 +124,7 @@ class SimpleEQLookAndFeel : public LookAndFeel_V4
 
 };
 
+//==============================================================================
 class SimpleEQAudioProcessorEditor  : public juce::AudioProcessorEditor,
 public Timer
 {
@@ -122,6 +151,8 @@ private:
     Image background;
 
     Gui::PresetPanel presetPannel;
+    
+    ResponseCurveComponent responseCurveComponent;
 
     juce::Slider freqSlider, freqGainSlider, qualitySlider, scaleSlider, gainSlider;
     juce::TextButton analysisButton;

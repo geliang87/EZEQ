@@ -10,8 +10,63 @@
 #include "PluginEditor.h"
 
 //==============================================================================
+ResponseCurveComponent::ResponseCurveComponent (SimpleEQAudioProcessor& p)
+: audioProcessor (p)
+{
+    const auto& params = audioProcessor.getParameters();
+    for( auto param : params )
+    {
+        param->addListener(this);
+    }
+    
+    startTimerHz (60);
+}
+
+ResponseCurveComponent::~ResponseCurveComponent()
+{
+    const auto& params = audioProcessor.getParameters();
+    for( auto param : params )
+    {
+        param->removeListener(this);
+    }
+}
+
+void ResponseCurveComponent::paint(juce::Graphics& g)
+{
+    drawBackgroundGrid (g);
+}
+
+void ResponseCurveComponent::resized()
+{}
+
+void ResponseCurveComponent::parameterValueChanged (int parameterIndex, float newValue)
+{
+    parametersChanged.set(true);
+}
+
+void ResponseCurveComponent::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
+{}
+
+void ResponseCurveComponent::timerCallback()
+{
+    if( parametersChanged.compareAndSetBool(false, true) )
+        updateResponseCurve();
+    
+    repaint();
+}
+
+void ResponseCurveComponent::updateResponseCurve()
+{}
+
+void ResponseCurveComponent::drawBackgroundGrid(juce::Graphics& g)
+{
+    g.setColour (juce::Colours::black);
+    g.fillAll();
+}
+
+//==============================================================================
 SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), presetPannel (p.getPresetManager())
+    : AudioProcessorEditor (&p), audioProcessor (p), presetPannel (p.getPresetManager()), responseCurveComponent (audioProcessor)
 {
     setSize (800,500);
     startTimer (100);
@@ -28,7 +83,6 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
     freqSlider.setTextValueSuffix(" Hz");
     freqSlider.setLookAndFeel(&eqLNF);
 
-  
     freqGainSlider.setSliderStyle(Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     freqGainSlider.setRange(-15.0, 15.0, 1.0);
     freqGainSlider.setDoubleClickReturnValue(true, 0.0f);
@@ -152,6 +206,9 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
         
         typeComboBoxAttachments.add (new APVTS::ComboBoxAttachment (audioProcessor.apvts, typeString, *typeCombos[i]));
     }
+    
+    // 配置曲线显示模块
+    addAndMakeVisible (responseCurveComponent);
 }
 
 SimpleEQAudioProcessorEditor::~SimpleEQAudioProcessorEditor()
@@ -221,39 +278,38 @@ void SimpleEQAudioProcessorEditor::resized()
     auto width = getWidth();
     auto height = getHeight();
 
-   freqSlider.setBounds(getLocalBounds().toFloat()
+    freqSlider.setBounds(getLocalBounds().toFloat()
         .withTrimmedTop(80.0f / 500.0f * height)
         .withTrimmedLeft(20.0f / 800.0f * width)
         .withWidth(80.0f / 800.0f * width)
         .withHeight(80.0f / 500.0f * height).toNearestInt());
 
-   freqGainSlider.setBounds(getLocalBounds().toFloat()
+    freqGainSlider.setBounds(getLocalBounds().toFloat()
        .withTrimmedTop(230.0f / 500.0f * height)
        .withTrimmedLeft(20.0f / 800.0f * width)
        .withWidth(80.0f / 800.0f * width)
        .withHeight(80.0f / 500.0f * height).toNearestInt());
 
-   qualitySlider.setBounds(getLocalBounds().toFloat()
+    qualitySlider.setBounds(getLocalBounds().toFloat()
        .withTrimmedTop(370.0f / 500.0f * height)
        .withTrimmedLeft(20.0f / 800.0f * width)
        .withWidth(80.0f / 800.0f * width)
        .withHeight(80.0f / 500.0f * height).toNearestInt());
 
-  scaleSlider.setBounds(getLocalBounds().toFloat()
+    scaleSlider.setBounds(getLocalBounds().toFloat()
       .withTrimmedTop(230.0f / 500.0f * height)
       .withTrimmedLeft(700.0f / 800.0f * width) 
       .withWidth(80.0f / 800.0f * width)
       .withHeight(80.0f / 500.0f * height).toNearestInt());
 
- gainSlider.setBounds(getLocalBounds().toFloat()
+    gainSlider.setBounds(getLocalBounds().toFloat()
       .withTrimmedTop(370.0f / 500.0f * height)
       .withTrimmedLeft(700.0f / 800.0f * width)
       .withWidth(80.0f / 800.0f * width)
       .withHeight(80.0f / 500.0f * height).toNearestInt());
 
- //button
-
- analysisButton.setBounds(getLocalBounds().toFloat()
+    //button
+    analysisButton.setBounds(getLocalBounds().toFloat()
      .withTrimmedTop(80.0f / 500.0f * height)
      .withTrimmedLeft(700.0f / 800.0f * width)
      .withWidth(80.0f / 800.0f * width)
@@ -283,39 +339,42 @@ void SimpleEQAudioProcessorEditor::resized()
         }
     }
 
-
- //label text
-
-  freqText.setBounds(getLocalBounds().toFloat()
+    //label text
+    freqText.setBounds(getLocalBounds().toFloat()
       .withTrimmedTop(55.0f / 500.0f * height)
       .withTrimmedLeft(20.0f / 800.0f * width)
       .withWidth(80.0f / 800.0f * width)
       .withHeight(32.5f / 500.0f * height).toNearestInt());
 
-  freqGainText.setBounds(getLocalBounds().toFloat()
+    freqGainText.setBounds(getLocalBounds().toFloat()
       .withTrimmedTop(205.0f / 500.0f * height)
       .withTrimmedLeft(20.0f / 800.0f * width)
       .withWidth(80.0f / 800.0f * width)
       .withHeight(32.5f / 500.0f * height).toNearestInt());
 
-  quailtyText.setBounds(getLocalBounds().toFloat()
+    quailtyText.setBounds(getLocalBounds().toFloat()
       .withTrimmedTop(345.0f / 500.0f * height)
       .withTrimmedLeft(20.0f / 800.0f * width) 
       .withWidth(80.0f / 800.0f * width)
       .withHeight(32.5f / 500.0f * height).toNearestInt());
 
-  scaleText.setBounds(getLocalBounds().toFloat()
+    scaleText.setBounds(getLocalBounds().toFloat()
       .withTrimmedTop(205.0f / 500.0f * height)
       .withTrimmedLeft(700.0f / 800.0f * width)
       .withWidth(80.0f / 800.0f * width)
       .withHeight(32.5f / 500.0f * height).toNearestInt());
 
-  gainText.setBounds(getLocalBounds().toFloat()
+    gainText.setBounds(getLocalBounds().toFloat()
       .withTrimmedTop(345.0f / 500.0f * height)
       .withTrimmedLeft(700.0f / 800.0f * width)
       .withWidth(80.0f / 800.0f * width)
       .withHeight(32.5f / 500.0f * height).toNearestInt());
-
+    
+    responseCurveComponent.setBounds (getLocalBounds().toFloat()
+                                      .withTrimmedTop (80.6f / 500.0f * height)
+                                      .withTrimmedLeft (125.0f / 800.0f * width)
+                                      .withWidth (555.0f / 800.0f * width)
+                                      .withHeight(275.0f / 500.0f * height).toNearestInt());
 }
 
 void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
