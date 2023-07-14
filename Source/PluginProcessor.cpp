@@ -430,39 +430,39 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
     else if (parameterID.startsWith("Bypass"))
     {
         int lastDigit = String::charToString(parameterID.getLastCharacter()).getIntValue();
+        bool flag = (newValue == 0.0f) ? false : true;
 
         switch (lastDigit)
         {
-        case 1:     
-            leftChain.setBypassed<ChainPosition::lowCut>(true);
-            rightChain.setBypassed<ChainPosition::lowCut>(true);
-            break;
+            case 1:
+                leftChain.setBypassed<ChainPosition::lowCut>(flag);
+                rightChain.setBypassed<ChainPosition::lowCut>(flag);
+                break;
 
-        case 2: 
-            leftChain.setBypassed<ChainPosition::filter2>(true);
-            rightChain.setBypassed<ChainPosition::filter2>(true);
-            break;
+            case 2:
+                leftChain.setBypassed<ChainPosition::filter2>(flag);
+                rightChain.setBypassed<ChainPosition::filter2>(flag);
+                break;
 
-        case 3:  
-            leftChain.setBypassed<ChainPosition::filter3>(true);
-            rightChain.setBypassed<ChainPosition::filter3>(true);
-            break;
+            case 3:
+                leftChain.setBypassed<ChainPosition::filter3>(flag);
+                rightChain.setBypassed<ChainPosition::filter3>(flag);
+                break;
 
-        case 4: 
-            leftChain.setBypassed<ChainPosition::filter4>(true);
-            rightChain.setBypassed<ChainPosition::filter4>(true);
-            break;
+            case 4:
+                leftChain.setBypassed<ChainPosition::filter4>(flag);
+                rightChain.setBypassed<ChainPosition::filter4>(flag);
+                break;
 
-        case 5: 
-            leftChain.setBypassed<ChainPosition::filter5>(true);
-            rightChain.setBypassed<ChainPosition::filter5>(true);
-            break;
+            case 5:
+                leftChain.setBypassed<ChainPosition::filter5>(flag);
+                rightChain.setBypassed<ChainPosition::filter5>(flag);
+                break;
 
-        case 6: 
-            leftChain.setBypassed<ChainPosition::highCut>(true);
-            rightChain.setBypassed<ChainPosition::highCut>(true);
-            break;
-
+            case 6:
+                leftChain.setBypassed<ChainPosition::highCut>(flag);
+                rightChain.setBypassed<ChainPosition::highCut>(flag);
+                break;
         }
     }
 }

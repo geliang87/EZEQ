@@ -287,7 +287,7 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
         String bypassString("Bypass");
         bypassString << i + 1;
 
-        freqButttonAttachment.add(new APVTS::ButtonAttachment(audioProcessor.apvts, bypassString, *freqButtons[i]));
+        freqButttonAttachments.add(new APVTS::ButtonAttachment(audioProcessor.apvts, bypassString, *freqButtons[i]));
     }
 
     for (int i = 0; i < 6; ++i)
