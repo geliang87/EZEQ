@@ -280,7 +280,16 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
     freqSliderAttachment.reset(new Attachment (audioProcessor.apvts, "Freq1", freqSlider));
     freqGainSliderAttachment.reset(new Attachment (audioProcessor.apvts, "Gain1", freqGainSlider));
     qualitySliderAttachment.reset(new Attachment (audioProcessor.apvts, "Q1", qualitySlider));
+
     
+    for (int i = 0; i < 6; ++i)
+    {
+        String bypassString("Bypass");
+        bypassString << i + 1;
+
+        freqButttonAttachment.add(new APVTS::ButtonAttachment(audioProcessor.apvts, bypassString, *freqButtons[i]));
+    }
+
     for (int i = 0; i < 6; ++i)
     {
         String typeString ("Type");

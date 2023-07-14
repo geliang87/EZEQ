@@ -177,6 +177,7 @@ private:
     freqSliderAttachment, freqGainSliderAttachment, qualitySliderAttachment;
     
     OwnedArray<APVTS::ComboBoxAttachment> typeComboBoxAttachments;
+    OwnedArray<APVTS::ButtonAttachment> freqButttonAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessorEditor)
 };

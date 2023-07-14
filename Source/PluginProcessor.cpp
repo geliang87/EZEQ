@@ -426,6 +426,45 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
                 break;
         }
     }
+
+    else if (parameterID.startsWith("Bypass"))
+    {
+        int lastDigit = String::charToString(parameterID.getLastCharacter()).getIntValue();
+
+        switch (lastDigit)
+        {
+        case 1:     
+            leftChain.setBypassed<ChainPosition::lowCut>(true);
+            rightChain.setBypassed<ChainPosition::lowCut>(true);
+            break;
+
+        case 2: 
+            leftChain.setBypassed<ChainPosition::filter2>(true);
+            rightChain.setBypassed<ChainPosition::filter2>(true);
+            break;
+
+        case 3:  
+            leftChain.setBypassed<ChainPosition::filter3>(true);
+            rightChain.setBypassed<ChainPosition::filter3>(true);
+            break;
+
+        case 4: 
+            leftChain.setBypassed<ChainPosition::filter4>(true);
+            rightChain.setBypassed<ChainPosition::filter4>(true);
+            break;
+
+        case 5: 
+            leftChain.setBypassed<ChainPosition::filter5>(true);
+            rightChain.setBypassed<ChainPosition::filter5>(true);
+            break;
+
+        case 6: 
+            leftChain.setBypassed<ChainPosition::highCut>(true);
+            rightChain.setBypassed<ChainPosition::highCut>(true);
+            break;
+
+        }
+    }
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::createParameterLayout()
