@@ -35,10 +35,16 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
 {
     drawBackgroundGrid (g);
     drawTextLabels (g);
+    
+    g.setColour (Colours::orange);
+    g.strokePath (responseCurve, PathStrokeType (2.f));
 }
 
 void ResponseCurveComponent::resized()
-{}
+{
+    responseCurve.preallocateSpace (getWidth() * 3);
+    updateResponseCurve();
+}
 
 void ResponseCurveComponent::parameterValueChanged (int parameterIndex, float newValue)
 {
@@ -57,7 +63,52 @@ void ResponseCurveComponent::timerCallback()
 }
 
 void ResponseCurveComponent::updateResponseCurve()
-{}
+{
+    // 绘制区域
+    auto areaResponse = getLocalBounds();
+    areaResponse.removeFromTop (16);
+    areaResponse.removeFromBottom (6);
+    areaResponse.removeFromLeft (20);
+    areaResponse.removeFromRight (20);
+    
+    // 计算频率曲线数值
+    Array<double> magnitudes;
+    auto w = areaResponse.getWidth();
+    auto sampleRate = audioProcessor.getSampleRate();
+    
+    magnitudes.clear();
+    
+    using ChainPosition = SimpleEQAudioProcessor::ChainPosition;
+    
+    for (int i = 0; i < w; ++i)
+    {
+        double mag = 1.0f;
+        
+        if (! audioProcessor.leftChain.isBypassed<ChainPosition::lowCut>())
+        {
+            auto freq = mapToLog10 (double (i) / double (w), 20.0, 20000.0);
+            mag *= audioProcessor.leftChain.get<ChainPosition::lowCut>().coefficients->getMagnitudeForFrequency (freq, sampleRate);
+        }
+        
+        magnitudes.add (mag);
+    }
+    
+    // 绘制频率曲线
+    
+    responseCurve.clear();
+    
+    const double outputMin = areaResponse.getBottom();
+    const double outputMax = areaResponse.getY();
+    
+    auto y = jmap (magnitudes[0], -24.0, 24.0, outputMin, outputMax);
+    responseCurve.startNewSubPath (areaResponse.getX(), y);
+    
+    for (int i = 1; i < magnitudes.size(); ++i )
+    {
+        auto y = jmap (magnitudes[i], -24.0, 24.0, outputMin, outputMax);
+        responseCurve.lineTo (areaResponse.getX() + i, y);
+    }
+}
 
 void ResponseCurveComponent::drawBackgroundGrid (juce::Graphics& g)
 {
