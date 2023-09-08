@@ -90,6 +90,36 @@ void ResponseCurveComponent::updateResponseCurve()
             mag *= audioProcessor.leftChain.get<ChainPosition::lowCut>().coefficients->getMagnitudeForFrequency (freq, sampleRate);
         }
         
+        if (! audioProcessor.leftChain.isBypassed<ChainPosition::filter2>())
+        {
+            auto freq = mapToLog10 (double (i) / double (w), 20.0, 20000.0);
+            mag *= audioProcessor.leftChain.get<ChainPosition::filter2>().coefficients->getMagnitudeForFrequency (freq, sampleRate);
+        }
+        
+        if (! audioProcessor.leftChain.isBypassed<ChainPosition::filter3>())
+        {
+            auto freq = mapToLog10 (double (i) / double (w), 20.0, 20000.0);
+            mag *= audioProcessor.leftChain.get<ChainPosition::filter3>().coefficients->getMagnitudeForFrequency (freq, sampleRate);
+        }
+        
+        if (! audioProcessor.leftChain.isBypassed<ChainPosition::filter4>())
+        {
+            auto freq = mapToLog10 (double (i) / double (w), 20.0, 20000.0);
+            mag *= audioProcessor.leftChain.get<ChainPosition::filter4>().coefficients->getMagnitudeForFrequency (freq, sampleRate);
+        }
+        
+        if (! audioProcessor.leftChain.isBypassed<ChainPosition::filter5>())
+        {
+            auto freq = mapToLog10 (double (i) / double (w), 20.0, 20000.0);
+            mag *= audioProcessor.leftChain.get<ChainPosition::filter5>().coefficients->getMagnitudeForFrequency (freq, sampleRate);
+        }
+        
+        if (! audioProcessor.leftChain.isBypassed<ChainPosition::highCut>())
+        {
+            auto freq = mapToLog10 (double (i) / double (w), 20.0, 20000.0);
+            mag *= audioProcessor.leftChain.get<ChainPosition::highCut>().coefficients->getMagnitudeForFrequency (freq, sampleRate);
+        }
+        
         magnitudes.add (mag);
     }
     
