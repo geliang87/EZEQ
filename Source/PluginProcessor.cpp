@@ -346,7 +346,7 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
                 break;
                 
             case 5:
-                filter2Q = newValue;
+                filter5Q = newValue;
                 updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
                 break;
                 

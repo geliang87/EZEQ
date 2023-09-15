@@ -30,6 +30,7 @@ public:
     void timerCallback() override;
     
     void updateResponseCurve();
+    Path responseCurve;
     
 private:
     SimpleEQAudioProcessor& audioProcessor;
