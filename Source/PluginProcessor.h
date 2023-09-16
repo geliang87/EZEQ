@@ -102,6 +102,9 @@ public:
     
     void updateFilterSetup (int filterIndex, FilterType type, float freq, float Q, float gain);
     
+    // Global gain parameter
+    float gainIndB = 0.0f;
+    
 private:
     
     std::unique_ptr<Service::PresetManager> presetManager;

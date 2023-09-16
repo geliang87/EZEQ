@@ -254,6 +254,8 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     
     leftChain.process(leftContext);
     rightChain.process(rightContext);
+    
+    buffer.applyGain (Decibels::decibelsToGain (gainIndB));
 }
 
 //==============================================================================
@@ -360,8 +362,15 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
     {
         int lastDigit = String::charToString (parameterID.getLastCharacter()).getIntValue();
         
+        DBG (std::to_string (lastDigit));
+        
         switch (lastDigit)
         {
+            // Global gain slider
+            case 0:
+                gainIndB = newValue;
+                break;
+                
             case 1:
                 updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
                 break;
