@@ -292,32 +292,32 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
         {
             case 1:
                 lowCutFreq = newValue;
-                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
+                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f, scale);
                 break;
                 
             case 2:
                 filter2Freq = newValue;
-                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain, scale);
                 break;
                 
             case 3:
                 filter3Freq = newValue;
-                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain);
+                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain, scale);
                 break;
                 
             case 4:
                 filter4Freq = newValue;
-                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain);
+                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain, scale);
                 break;
                 
             case 5:
                 filter5Freq = newValue;
-                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
+                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain, scale);
                 break;
                 
             case 6:
                 highCutFreq = newValue;
-                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
+                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f, scale);
                 break;
         }
     }
@@ -329,32 +329,32 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
         {
             case 1:
                 lowCutQ = newValue;
-                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
+                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f, scale);
                 break;
             
             case 2:
                 filter2Q = newValue;
-                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain, scale);
                 break;
                 
             case 3:
                 filter3Q = newValue;
-                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain);
+                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain, scale);
                 break;
                 
             case 4:
                 filter4Q = newValue;
-                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain);
+                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain, scale);
                 break;
                 
             case 5:
                 filter5Q = newValue;
-                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
+                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain, scale);
                 break;
                 
             case 6:
                 highCutQ = newValue;
-                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
+                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f, scale);
                 break;
         }
     }
@@ -372,31 +372,31 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
                 break;
                 
             case 1:
-                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
+                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f, scale);
                 break;
             
             case 2:
                 filter2Gain = Decibels::decibelsToGain (newValue);
-                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain, scale);
                 break;
                 
             case 3:
                 filter3Gain = Decibels::decibelsToGain (newValue);
-                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain);
+                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain, scale);
                 break;
                 
             case 4:
                 filter4Gain = Decibels::decibelsToGain (newValue);
-                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain);
+                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain, scale);
                 break;
                 
             case 5:
                 filter5Gain = Decibels::decibelsToGain (newValue);
-                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
+                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain, scale);
                 break;
                 
             case 6:
-                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
+                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f, scale);
                 break;
         }
     }
@@ -407,35 +407,34 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
         switch (lastDigit)
         {
             case 1:
-                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f);
+                updateFilterSetup (1, FilterType::lowCutType, lowCutFreq, lowCutQ, 1.0f, scale);
                 break;
             
             case 2:
                 filter2Type = static_cast<FilterType> (newValue);
-                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain);
+                updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain, scale);
                 break;
                 
             case 3:
                 filter3Gain = static_cast<FilterType> (newValue);
-                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain);
+                updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain, scale);
                 break;
                 
             case 4:
                 filter4Gain = static_cast<FilterType> (newValue);
-                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain);
+                updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain, scale);
                 break;
                 
             case 5:
                 filter5Gain = static_cast<FilterType> (newValue);
-                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain);
+                updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain, scale);
                 break;
                 
             case 6:
-                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f);
+                updateFilterSetup (6, FilterType::highCutType, highCutFreq, highCutQ, 1.0f, scale);
                 break;
         }
     }
-
     else if (parameterID.startsWith("Bypass"))
     {
         int lastDigit = String::charToString(parameterID.getLastCharacter()).getIntValue();
@@ -473,6 +472,18 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
                 rightChain.setBypassed<ChainPosition::highCut>(flag);
                 break;
         }
+    }
+    else if (parameterID == "Scale")
+    {
+        scale = newValue / 100.0f;
+        
+        if (scale < 0.01f)
+            scale = 0.01f;
+        
+        updateFilterSetup (2, filter2Type, filter2Freq, filter2Q, filter2Gain, scale);
+        updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain, scale);
+        updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain, scale);
+        updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain, scale);
     }
 }
 
@@ -574,7 +585,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout SimpleEQAudioProcessor::crea
     return layout;
 }
 
-void SimpleEQAudioProcessor::updateFilterSetup (int filterIndex, FilterType type, float freq, float Q, float gain)
+void SimpleEQAudioProcessor::updateFilterSetup (int filterIndex, FilterType type, float freq, float Q, float gain, float scale)
 {
     if (filterIndex == 1)
     {
@@ -607,7 +618,7 @@ void SimpleEQAudioProcessor::updateFilterSetup (int filterIndex, FilterType type
         }
         else if (type == FilterType::bellType)
         {
-            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter2Freq, filter2Q, filter2Gain);
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter2Freq, filter2Q, filter2Gain * scale);
 
             updateCoefficients(filterLeft.coefficients, newCoefficients);
             updateCoefficients(filterRight.coefficients, newCoefficients);
@@ -648,7 +659,7 @@ void SimpleEQAudioProcessor::updateFilterSetup (int filterIndex, FilterType type
         }
         else if (type == FilterType::bellType)
         {
-            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter3Freq, filter3Q, filter3Gain);
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter3Freq, filter3Q, filter3Gain * scale);
 
             updateCoefficients(filterLeft.coefficients, newCoefficients);
             updateCoefficients(filterRight.coefficients, newCoefficients);
@@ -689,7 +700,7 @@ void SimpleEQAudioProcessor::updateFilterSetup (int filterIndex, FilterType type
         }
         else if (type == FilterType::bellType)
         {
-            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter4Freq, filter4Q, filter4Gain);
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter4Freq, filter4Q, filter4Gain * scale);
 
             updateCoefficients(filterLeft.coefficients, newCoefficients);
             updateCoefficients(filterRight.coefficients, newCoefficients);
@@ -730,7 +741,7 @@ void SimpleEQAudioProcessor::updateFilterSetup (int filterIndex, FilterType type
         }
         else if (type == FilterType::bellType)
         {
-            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter5Freq, filter5Q, filter5Gain);
+            auto newCoefficients = dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), filter5Freq, filter5Q, filter5Gain * scale);
 
             updateCoefficients(filterLeft.coefficients, newCoefficients);
             updateCoefficients(filterRight.coefficients, newCoefficients);

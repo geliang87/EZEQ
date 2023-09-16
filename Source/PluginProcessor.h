@@ -100,7 +100,10 @@ public:
         *old = *replacements;
     }
     
-    void updateFilterSetup (int filterIndex, FilterType type, float freq, float Q, float gain);
+    void updateFilterSetup (int filterIndex, FilterType type, float freq, float Q, float gain, float scale);
+    
+    // Global scale parameter
+    float scale = 1.0f;
     
     // Global gain parameter
     float gainIndB = 0.0f;
