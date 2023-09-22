@@ -314,6 +314,7 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
         combo->setColour(PopupMenu::ColourIds::highlightedBackgroundColourId, Colours::darkorange);
 
         addAndMakeVisible(combo);
+        combo->addListener (this);
 
         typeCombos.add(combo);
     }
@@ -344,14 +345,14 @@ SimpleEQAudioProcessorEditor::SimpleEQAudioProcessorEditor (SimpleEQAudioProcess
     gainText.setColour(Label::ColourIds::textColourId, Colours::lightyellow);
 
     addAndMakeVisible(freqSlider);
-    addAndMakeVisible(freqGainSlider);
+    addChildComponent (freqGainSlider);
     addAndMakeVisible(qualitySlider);
     addAndMakeVisible(scaleSlider);
     addAndMakeVisible(gainSlider);
     addAndMakeVisible(analysisButton);
 
     addAndMakeVisible(freqText);
-    addAndMakeVisible(freqGainText);
+    addChildComponent (freqGainText);
     addAndMakeVisible(quailtyText);
     addAndMakeVisible(scaleText);
     addAndMakeVisible(gainText);
@@ -570,6 +571,8 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q1", qualitySlider));
 
         selectedFilter = 1;
+        freqGainText.setVisible (false);
+        freqGainSlider.setVisible (false);
         repaint();
     }
 
@@ -589,6 +592,20 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q2", qualitySlider));
 
         selectedFilter = 2;
+        
+        auto param = dynamic_cast<AudioParameterChoice*> (audioProcessor.apvts.getParameter ("Type2"));
+        
+        if (param->getIndex() == 2.0f)
+        {
+            freqGainText.setVisible (true);
+            freqGainSlider.setVisible (true);
+        }
+        else
+        {
+            freqGainText.setVisible (false);
+            freqGainSlider.setVisible (false);
+        }
+        
         repaint();
     }
 
@@ -608,6 +625,20 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q3", qualitySlider));
 
         selectedFilter = 3;
+        
+        auto param = dynamic_cast<AudioParameterChoice*> (audioProcessor.apvts.getParameter ("Type3"));
+        
+        if (param->getIndex() == 2.0f)
+        {
+            freqGainText.setVisible (true);
+            freqGainSlider.setVisible (true);
+        }
+        else
+        {
+            freqGainText.setVisible (false);
+            freqGainSlider.setVisible (false);
+        }
+        
         repaint();
     }
 
@@ -627,6 +658,20 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q4", qualitySlider));
 
         selectedFilter = 4;
+        
+        auto param = dynamic_cast<AudioParameterChoice*> (audioProcessor.apvts.getParameter ("Type4"));
+        
+        if (param->getIndex() == 2.0f)
+        {
+            freqGainText.setVisible (true);
+            freqGainSlider.setVisible (true);
+        }
+        else
+        {
+            freqGainText.setVisible (false);
+            freqGainSlider.setVisible (false);
+        }
+        
         repaint();
     }
 
@@ -646,6 +691,20 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q5", qualitySlider));
 
         selectedFilter = 5;
+        
+        auto param = dynamic_cast<AudioParameterChoice*> (audioProcessor.apvts.getParameter ("Type5"));
+        
+        if (param->getIndex() == 2.0f)
+        {
+            freqGainText.setVisible (true);
+            freqGainSlider.setVisible (true);
+        }
+        else
+        {
+            freqGainText.setVisible (false);
+            freqGainSlider.setVisible (false);
+        }
+        
         repaint();
     }
 
@@ -665,6 +724,8 @@ void SimpleEQAudioProcessorEditor::mouseDown(const MouseEvent& event)
         qualitySliderAttachment.reset(new Attachment(audioProcessor.apvts, "Q6", qualitySlider));
 
         selectedFilter = 6;
+        freqGainText.setVisible (false);
+        freqGainSlider.setVisible (false);
         repaint();
     }
 }
@@ -674,4 +735,24 @@ void SimpleEQAudioProcessorEditor::timerCallback()
     // 判断初始化完成，进行绘制
     if (freqButtons.size() == 6)
         resized();
+}
+
+void SimpleEQAudioProcessorEditor::comboBoxChanged (ComboBox *comboBoxThatHasChanged)
+{
+    if (comboBoxThatHasChanged == typeCombos[1]
+        || comboBoxThatHasChanged == typeCombos[2]
+        || comboBoxThatHasChanged == typeCombos[3]
+        || comboBoxThatHasChanged == typeCombos[4])
+    {
+        if (comboBoxThatHasChanged->getSelectedId() == 3)
+        {
+            freqGainText.setVisible (true);
+            freqGainSlider.setVisible (true);
+        }
+        else
+        {
+            freqGainText.setVisible (false);
+            freqGainSlider.setVisible (false);
+        }
+    }
 }

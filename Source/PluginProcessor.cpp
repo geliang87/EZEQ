@@ -416,17 +416,17 @@ void SimpleEQAudioProcessor::parameterChanged (const String &parameterID, float 
                 break;
                 
             case 3:
-                filter3Gain = static_cast<FilterType> (newValue);
+                filter3Type = static_cast<FilterType> (newValue);
                 updateFilterSetup (3, filter3Type, filter3Freq, filter3Q, filter3Gain, scale);
                 break;
                 
             case 4:
-                filter4Gain = static_cast<FilterType> (newValue);
+                filter4Type = static_cast<FilterType> (newValue);
                 updateFilterSetup (4, filter4Type, filter4Freq, filter4Q, filter4Gain, scale);
                 break;
                 
             case 5:
-                filter5Gain = static_cast<FilterType> (newValue);
+                filter5Type = static_cast<FilterType> (newValue);
                 updateFilterSetup (5, filter5Type, filter5Freq, filter5Q, filter5Gain, scale);
                 break;
                 

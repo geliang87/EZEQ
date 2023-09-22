@@ -137,7 +137,8 @@ class SimpleEQLookAndFeel : public LookAndFeel_V4
 
 //==============================================================================
 class SimpleEQAudioProcessorEditor  : public juce::AudioProcessorEditor,
-public Timer
+public Timer,
+public ComboBox::Listener
 {
 public:
     SimpleEQAudioProcessorEditor (SimpleEQAudioProcessor&);
@@ -151,6 +152,7 @@ public:
     void mouseDown (const MouseEvent& event) override;
     
     void timerCallback() override;
+    void comboBoxChanged (ComboBox *comboBoxThatHasChanged) override;
 
 private:
     // This reference is provided as a quick way for your editor to
